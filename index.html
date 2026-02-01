@@ -14,6 +14,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
+      --indigo-600: #4f46e5;
+      --indigo-500: #6366f1;
+      --indigo-400: #818cf8;
+      --indigo-100: #e0e7ff;
       --primary: #3b82f6;
       /* Royal Blue */
       --primary-dark: #2563eb;
@@ -28,8 +32,9 @@
       --glass-bg: rgba(255, 255, 255, 0.7);
       --glass-border: rgba(255, 255, 255, 0.5);
       --neon-glow: 0 0 10px rgba(59, 130, 246, 0.5), 0 0 20px rgba(6, 182, 212, 0.3);
-      --header-bg: rgba(255, 255, 255, 0.85);
-      --header-border: rgba(255, 255, 255, 0.3);
+      --header-bg: rgba(255, 255, 255, 0.6);
+      --glass-bg: rgba(255, 255, 255, 0.4);
+      --header-border: rgba(255, 255, 255, 0.4);
     }
 
     * {
@@ -159,10 +164,10 @@
 
     .glass-header {
       background: var(--header-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
       border-bottom: 1px solid var(--header-border);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
     }
 
     .chapter-btn {
@@ -173,7 +178,7 @@
       flex-direction: column;
       justify-content: center;
       height: 100%;
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.35);
       backdrop-filter: blur(10px);
       border-radius: 20px;
       position: relative;
@@ -196,19 +201,30 @@
       transform: translateY(-8px) scale(1.02);
       box-shadow: var(--neon-glow);
       border-color: #fff;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.55);
     }
 
     .chapter-checkbox:checked+label {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--gradient-end) 100%);
+      background: var(--active-bg);
       color: white;
       border-color: transparent;
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
       transform: translateY(-4px) scale(1.02);
     }
 
     .chapter-checkbox:checked+label p {
-      color: rgba(255, 255, 255, 0.85);
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Force white text and icon on selection */
+    .chapter-checkbox:checked+label i {
+      background: none !important;
+      -webkit-text-fill-color: white !important;
+      color: white !important;
+    }
+
+    .chapter-checkbox:checked+label h3 {
+      color: white !important;
     }
 
     .option {
@@ -398,16 +414,18 @@
       line-height: 1.4;
     }
 
+    /* Sticky Footer style removed */
+
     /* Dark Mode Styles */
     body.dark {
       background: #121212;
       color: #e2e8f0;
-      --header-bg: rgba(30, 41, 59, 0.8);
-      --header-border: rgba(255, 255, 255, 0.1);
+      --header-bg: rgba(15, 23, 42, 0.6);
+      --header-border: rgba(255, 255, 255, 0.08);
     }
 
     body.dark .card {
-      background-color: #1e1e1e;
+      background-color: rgba(30, 41, 59, 0.7);
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
     }
 
@@ -460,8 +478,14 @@
       border-color: var(--indigo-600);
     }
 
+    body.dark .option {
+      background-color: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
     body.dark .option:hover {
       background-color: #2d3748;
+      border-left-color: var(--indigo-400);
     }
 
     body.dark .selected-answer {
@@ -544,6 +568,31 @@
     body.dark header p {
       color: #a0aec0;
     }
+
+    body.dark .bg-gray-300 {
+      background-color: #4a5568;
+    }
+
+    /* Fix for Select All button in dark mode */
+    body.dark .bg-indigo-50 {
+      background-color: rgba(79, 70, 229, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    body.dark .bg-indigo-100 {
+      background-color: rgba(79, 70, 229, 0.25);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+    }
+
+    body.dark .hover\:bg-indigo-100:hover {
+      background-color: rgba(79, 70, 229, 0.2);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    body.dark .bg-indigo-100.hover\:bg-indigo-100:hover {
+      background-color: rgba(79, 70, 229, 0.35);
+      border-color: rgba(99, 102, 241, 0.5);
+    }
   </style>
 </head>
 
@@ -583,10 +632,10 @@
   </header>
 
   <!-- Main Content with top padding to account for fixed header -->
-  <div class="container mx-auto px-4 max-w-6xl pt-32 pb-8">
+  <div class="container mx-auto px-4 max-w-6xl pt-32 pb-8 min-h-screen flex flex-col justify-between">
 
     <!-- Quiz Type Selection (Hidden) -->
-    <div class="flex justify-center mb-8 bg-white rounded-xl shadow-sm overflow-hidden card" style="display: none;">
+    <div class="flex justify-center mb-8 rounded-xl shadow-sm overflow-hidden card" style="display: none;">
       <button id="instructor-tab" class="quiz-type-tab active px-8 py-4 font-medium w-1/2"
         onclick="switchQuizType('instructor')">
         <i class="fas fa-chalkboard-teacher mr-3"></i> Instructor Quizzes
@@ -597,7 +646,7 @@
     </div>
 
     <!-- Main Content Area -->
-    <main id="app" class="bg-white rounded-xl shadow-md p-6 md:p-8 fade-in card">
+    <main id="app" class="rounded-xl shadow-md p-6 md:p-8 fade-in card flex-1">
       <!-- Chapter Selection Screen -->
       <div id="chapter-selection" class="text-center">
         <h2 id="quiz-type-title" class="text-2xl font-semibold text-gray-800 mb-2">Select Chapters</h2>
@@ -611,6 +660,24 @@
           </div>
           <div class="progress-bar">
             <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Controls: Select All & Shuffle -->
+        <div class="flex flex-wrap items-center justify-between mb-6 gap-4 px-2">
+          <button id="select-all-btn" onclick="toggleSelectAll()"
+            class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors flex items-center">
+            <i class="far fa-check-square mr-2"></i> <span>Select All</span>
+          </button>
+
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-medium text-gray-700">Shuffle Questions</span>
+            <button id="shuffle-toggle" onclick="toggleShuffle()"
+              class="w-12 h-6 rounded-full bg-gray-300 relative transition-colors duration-300 focus:outline-none">
+              <div
+                class="w-4 h-4 rounded-full bg-white absolute top-1 left-1 shadow-sm transition-transform duration-300 transform translate-x-0">
+              </div>
+            </button>
           </div>
         </div>
 
@@ -663,7 +730,7 @@
 
         <div class="flex flex-wrap justify-between items-center quiz-nav-buttons gap-4">
           <div class="flex flex-wrap gap-3">
-            <button id="home-btn" onclick="returnToHomeScreen()"
+            <button id="home-btn" onclick="goHome()"
               class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2.5 rounded-lg font-medium transition-all">
               <i class="fas fa-home mr-2"></i> Home
             </button>
@@ -2953,322 +3020,7 @@
 
           ]
         },
-        '20': {
-          title: "Chapter 20: Sustainable Marketing",
-          questions: [
 
-            {
-              "question": "Which of the following best defines 'Sustainable Marketing' according to the sources?",
-              "options": [
-                "Marketing that focuses exclusively on maximizing short-term profits for the company.",
-                "Socially and environmentally responsible marketing that meets the present needs of consumers and businesses while also preserving or enhancing the ability of future generations to meet their needs.",
-                "A strategy that prioritizes the immediate wants of consumers over the long-term welfare of society.",
-                "The process of using digital technology to reduce the cost of physical advertising."
-              ],
-              "answer": "B",
-              "explanation": "Sustainable marketing is defined as meeting current needs in a way that preserves the rights and options of future generations of consumers and businesses."
-            },
-            {
-              "question": "How does the 'Sustainable Marketing Concept' differ from the 'Marketing Concept'?",
-              "options": [
-                "The marketing concept focuses on the future needs of the business, while sustainable marketing focuses on the now.",
-                "The marketing concept focuses on meeting the current needs of both customers and the company, whereas sustainable marketing considers the future needs of both.",
-                "Sustainable marketing only considers the environment, while the marketing concept only considers profit.",
-                "There is no difference between the two concepts."
-              ],
-              "answer": "B",
-              "explanation": "While the marketing concept means meeting current needs, the sustainable marketing concept looks at the future needs of both the consumer and the business."
-            },
-            {
-              "question": "Which of the following is a major social criticism of marketing's impact on individual consumers?",
-              "options": [
-                "Providing too much information about product availability.",
-                "Encouraging high-pressure selling to persuade people to buy goods they didn't intend to buy.",
-                "Creating too many social goods like public parks.",
-                "Reducing the cost of distribution through intermediaries."
-              ],
-              "answer": "B",
-              "explanation": "Critics charge that some marketing involves high-pressure selling that persuades people to buy things they had no intention of buying."
-            },
-            {
-              "question": "Critics argue that high prices in the American marketing system are caused by which three factors?",
-              "options": [
-                "High costs of distribution, high advertising/promotion costs, and excessive mark-ups.",
-                "Low labor costs, high production efficiency, and mass distribution.",
-                "Government subsidies, low demand, and pure competition.",
-                "Environmental regulations, ethical sourcing, and fair trade."
-              ],
-              "answer": "A",
-              "explanation": "The complaint regarding high prices points specifically to the high costs of distribution, advertising and promotion, and excessive mark-ups."
-            },
-            {
-              "question": "How do marketers typically respond to the criticism that intermediaries (wholesalers/retailers) drive up prices?",
-              "options": [
-                "They agree and suggest consumers should buy only from factories.",
-                "They argue that intermediaries are important and offer value by performing necessary tasks.",
-                "They blame government regulations for the cost of distribution.",
-                "They suggest that advertising is the only way to lower distribution costs."
-              ],
-              "answer": "B",
-              "explanation": "Marketers respond that intermediaries provide value through services consumers want, such as convenience and larger assortments."
-            },
-            {
-              "question": "'Deceptive practices' in marketing generally fall into which three categories?",
-              "options": [
-                "Design, quality, and safety.",
-                "Pricing, promotion, and packaging.",
-                "Distribution, logistics, and supply chain.",
-                "Research, analytics, and big data."
-              ],
-              "answer": "B",
-              "explanation": "Companies are often accused of deceptive practices that lead customers to believe they are getting more value than they are through deceptive pricing, promotion, or packaging."
-            },
-            {
-              "question": "What is the definition of 'puffery' in advertising?",
-              "options": [
-                "A deliberate lie about a product's safety.",
-                "Innocent exaggeration for effect.",
-                "A legal requirement to include nutritional information.",
-                "The use of high-pressure sales tactics."
-              ],
-              "answer": "B",
-              "explanation": "The sources distinguish between deception and puffery, which is defined as exaggeration for effect."
-            },
-            {
-              "question": "Which of the following is a common response to the criticism of 'planned obsolescence'?",
-              "options": [
-                "It is a myth and does not exist in a competitive market.",
-                "It is actually the result of a competitive market and consumer desire for progress and the latest innovations.",
-                "Producers deliberately make products break down to save on material costs.",
-                "It is mandated by the government to keep the economy moving."
-              ],
-              "answer": "B",
-              "explanation": "Marketers argue that what critics call planned obsolescence is often just the result of a competitive market and consumers wanting the newest features."
-            },
-            {
-              "question": "What is 'redlining'?",
-              "options": [
-                "A method of highlighting the most profitable products in a catalog.",
-                "A practice where major chain retailers avoid placing stores in disadvantaged neighborhoods.",
-                "A type of digital advertising that uses red text for urgency.",
-                "A safety standard for industrial products."
-              ],
-              "answer": "B",
-              "explanation": "Redlining involves retailers drawing a 'red line' around disadvantaged neighborhoods to avoid opening stores there."
-            },
-            {
-              "question": "Critics of the marketing system charge that it creates 'cultural pollution' by:",
-              "options": [
-                "Cleaning up waste before it is created.",
-                "Constant assault on our senses by marketing and advertising.",
-                "Providing too many public goods like highways.",
-                "Encouraging the use of sustainable ingredients."
-              ],
-              "answer": "B",
-              "explanation": "Cultural pollution is the complaint that our senses are constantly being interrupted and assaulted by ads and commercial noise."
-            },
-            {
-              "question": "Which action is an example of an organized movement to improve the power of buyers in relation to sellers?",
-              "options": [
-                "Environmentalism",
-                "Consumerism",
-                "Innovative marketing",
-                "Planned obsolescence"
-              ],
-              "answer": "B",
-              "explanation": "Consumerism is the organized movement of citizens and government agencies to improve the rights and power of buyers."
-            },
-            {
-              "question": "Traditional 'sellers' rights' include all of the following EXCEPT:",
-              "options": [
-                "The right to introduce any product as long as it is not hazardous.",
-                "The right to charge any price as long as there is no discrimination among similar buyers.",
-                "The right to expect the product to perform as claimed.",
-                "The right to use any product message that is not misleading."
-              ],
-              "answer": "C",
-              "explanation": "Expecting the product to perform as claimed is considered a traditional buyer's right, not a seller's right."
-            },
-            {
-              "question": "Which of the following is a right that consumer advocates (consumerists) call for?",
-              "options": [
-                "The right to influence products to improve the 'quality of life.'",
-                "The right to avoid paying any taxes on purchases.",
-                "The right to a 50% discount on all convenience products.",
-                "The right to return a product 10 years after purchase."
-              ],
-              "answer": "A",
-              "explanation": "Advocates call for the right to influence products and marketing practices in ways that will improve the quality of life."
-            },
-            {
-              "question": "What is the primary focus of 'Environmentalism'?",
-              "options": [
-                "Improving the rights of buyers in relation to sellers.",
-                "Protecting and improving people's living environment.",
-                "Maximizing the short-run profitability of businesses.",
-                "Ensuring that every home has a traditional refrigerator."
-              ],
-              "answer": "B",
-              "explanation": "Environmentalism is an organized movement to protect and improve people's living environment."
-            },
-            {
-              "question": "'Environmental sustainability' involves which of the following?",
-              "options": [
-                "Earning profits while helping to save the planet.",
-                "Eliminating all marketing activities to save resources.",
-                "Increasing the production of pleasing products like junk food.",
-                "Only cleaning up waste after it has been created."
-              ],
-              "answer": "A",
-              "explanation": "Environmental sustainability is a management approach where a company earns profits while helping to save the planet."
-            },
-            {
-              "question": "In the environmental sustainability grid, what is 'Pollution Prevention'?",
-              "options": [
-                "Cleaning up waste after it is created.",
-                "Minimizing environmental impact throughout the full product life cycle.",
-                "Eliminating or minimizing waste before it is created.",
-                "Developing new sets of environmental skills."
-              ],
-              "answer": "C",
-              "explanation": "Pollution prevention involves eliminating or reducing waste before it is ever created."
-            },
-            {
-              "question": "What does 'Product Stewardship' entail in the context of sustainability?",
-              "options": [
-                "Designing a new logo for every product line extension.",
-                "Minimizing pollution from production and all environmental impact throughout the full product life cycle.",
-                "Focusing only on the 'now' needs of consumers.",
-                "Increasing the advertising budget to promote green products."
-              ],
-              "answer": "B",
-              "explanation": "Product stewardship means minimizing environmental impact through the entire product life cycle, not just production."
-            },
-            {
-              "question": "Which dimension of the sustainability grid is considered a 'Beyond Greening' activity?",
-              "options": [
-                "Pollution prevention.",
-                "Sustainability vision.",
-                "Product stewardship.",
-                "Traditional retail marketing."
-              ],
-              "answer": "B",
-              "explanation": "Both New Clean Technologies and Sustainability Vision are categorized as 'Beyond Greening' (Tomorrow) activities."
-            },
-            {
-              "question": "What is a 'Sustainability Vision' as defined in the sources?",
-              "options": [
-                "A company's plan to increase sales by 50% next year.",
-                "A guide to the future showing how a company's products, processes, and policies must evolve and what is needed to get there.",
-                "A specialized type of television advertisement.",
-                "The right to consume now without regard for the future."
-              ],
-              "answer": "B",
-              "explanation": "A sustainability vision serves as a guide for the future, outlining how a company must evolve to become sustainable."
-            },
-            {
-              "question": "Which sustainable marketing principle states a company should view marketing from the customer's point of view?",
-              "options": [
-                "Innovative marketing",
-                "Consumer-oriented marketing",
-                "Customer-value marketing",
-                "Sense-of-mission marketing"
-              ],
-              "answer": "B",
-              "explanation": "Consumer-oriented marketing means the company views and organizes its activities from the consumer's point of view."
-            },
-            {
-              "question": "'Customer-value marketing' suggests that a company should:",
-              "options": [
-                "Invest most of its resources into customer-value-building marketing.",
-                "Focus on short-term sales promotions.",
-                "Use high-pressure selling to close deals.",
-                "Spend at least 50% of its budget on cultural pollution."
-              ],
-              "answer": "A",
-              "explanation": "Customer-value marketing dictates that a firm should put resources into investments that build value FOR customers."
-            },
-            {
-              "question": "Which principle requires a company to continuously seek real product and marketing improvements?",
-              "options": [
-                "Innovative marketing",
-                "Societal marketing",
-                "Sense-of-mission marketing",
-                "Consumer-oriented marketing"
-              ],
-              "answer": "A",
-              "explanation": "Innovative marketing is the principle that a company should continuously seek real product and marketing improvements."
-            },
-            {
-              "question": "'Sense-of-mission marketing' means that a company should define its mission in:",
-              "options": [
-                "Narrow product terms.",
-                "Broad social terms.",
-                "Terms of quarterly profit growth.",
-                "Terms of competitor strategies."
-              ],
-              "answer": "B",
-              "explanation": "Sense-of-mission marketing involves defining the mission in broad social terms rather than narrow product terms."
-            },
-            {
-              "question": "Under the 'Societal Marketing' principle, a company makes decisions by considering:",
-              "options": [
-                "Only the company's profit requirements.",
-                "Consumers' short-run wants only.",
-                "Consumers' wants, the company's requirements, and the long-run interests of both consumers and society.",
-                "The strategies of its closest competitors."
-              ],
-              "answer": "C",
-              "explanation": "Societal marketing balances the company's profits, consumer wants, and the long-run interests of society."
-            },
-            {
-              "question": "Products that have low immediate appeal but may benefit consumers in the long run are classified as:",
-              "options": [
-                "Desirable products",
-                "Deficient products",
-                "Pleasing products",
-                "Salutary products"
-              ],
-              "answer": "D",
-              "explanation": "Salutary products are those that have low immediate appeal but provide long-run benefits."
-            },
-            {
-              "question": "Cigarettes and junk food are examples of which type of product classification?",
-              "options": [
-                "Desirable products",
-                "Pleasing products",
-                "Salutary products",
-                "Deficient products"
-              ],
-              "answer": "B",
-              "explanation": "Pleasing products give high immediate satisfaction but may hurt consumers in the long run."
-            },
-            {
-              "question": "What is a 'Deficient Product'?",
-              "options": [
-                "A product that gives high immediate satisfaction and long-run benefit.",
-                "A product that has neither immediate appeal nor long-run benefits.",
-                "A product that is only sold in 'food deserts.'",
-                "A product that is undergoing 'planned obsolescence.'"
-              ],
-              "answer": "B",
-              "explanation": "Deficient products lack both immediate appeal and long-run benefits."
-            },
-            {
-              "question": "Which of the following is an ethical norm suggested by the American Marketing Association?",
-              "options": [
-                "Maximize short-term shareholder value at any cost.",
-                "Do no harm.",
-                "Use puffery to improve the brand's image.",
-                "Focus exclusively on pleasing products."
-              ],
-              "answer": "B",
-              "explanation": "The AMA norms include doing no harm, fostering trust, and embracing ethical values like honesty and fairness."
-            }
-
-
-          ]
-        } */
       },
       practice: {
         'chapter-1': {
@@ -3493,18 +3245,45 @@
 
     // Chapter styles for UI with icons for each chapter
     const chapterStyles = [
-      { bg: 'bg-blue-50', hover: 'hover:bg-blue-100', text: 'text-blue-700', icon: 'fa-users' }, // Ch 1 - Introduction to HRM
-      { bg: 'bg-indigo-50', hover: 'hover:bg-indigo-100', text: 'text-indigo-700', icon: 'fa-user-tie' }, // Ch 2 - Manager Role
-      { bg: 'bg-cyan-50', hover: 'hover:bg-cyan-100', text: 'text-cyan-700', icon: 'fa-chart-line' }, // Ch 3 - Competency Based
-      { bg: 'bg-sky-50', hover: 'hover:bg-sky-100', text: 'text-sky-700', icon: 'fa-clipboard-list' } // Ch 4 - Job Analysis
+      {
+        bg: 'bg-blue-50',
+        hover: 'hover:bg-blue-100',
+        text: 'text-blue-700',
+        iconGradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+        activeColor: '#2563eb',
+        icon: 'fa-users'
+      },
+      {
+        bg: 'bg-purple-50',
+        hover: 'hover:bg-purple-100',
+        text: 'text-purple-700',
+        iconGradient: 'linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)',
+        activeColor: '#9333ea',
+        icon: 'fa-user-tie'
+      },
+      {
+        bg: 'bg-emerald-50',
+        hover: 'hover:bg-emerald-100',
+        text: 'text-emerald-700',
+        iconGradient: 'linear-gradient(135deg, #10b981 0%, #047857 100%)',
+        activeColor: '#059669',
+        icon: 'fa-chart-line'
+      },
+      {
+        bg: 'bg-amber-50',
+        hover: 'hover:bg-amber-100',
+        text: 'text-amber-700',
+        iconGradient: 'linear-gradient(135deg, #f59e0b 0%, #b45309 100%)',
+        activeColor: '#d97706',
+        icon: 'fa-clipboard-list'
+      }
     ];
 
     // Quiz state
     let currentQuizType = 'instructor';
-    let currentPracticeSubTab = 'chapter';
     let selectedChapters = [];
-    let currentChapterIndex = 0;
-    let currentQuestion = 0;
+    let allQuestions = [];
+    let currentGlobalQuestionIndex = 0;
     let userAnswers = [];
     let quizResults = {
       correct: 0,
@@ -3512,57 +3291,75 @@
       skipped: 0
     };
     let isAnswerShown = false;
+    let isShuffleEnabled = false;
 
-    // DOM elements
-    const chapterSelection = document.getElementById('chapter-selection');
-    const quizScreen = document.getElementById('quiz-screen');
-    const reviewScreen = document.getElementById('review-screen');
-    const chapterTitle = document.getElementById('chapter-title');
-    const currentQuestionEl = document.getElementById('current-question');
-    const totalQuestionsEl = document.getElementById('total-questions');
-    const questionContainer = document.getElementById('question-container');
-    const homeBtn = document.getElementById('home-btn');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const reviewBtn = document.getElementById('review-btn');
-    const showAnswerBtn = document.getElementById('show-answer-btn');
-    const correctCount = document.getElementById('correct-count');
-    const incorrectCount = document.getElementById('incorrect-count');
-    const scoreBar = document.getElementById('score-bar');
-    const reviewQuestionsContainer = document.getElementById('review-questions-container');
-    const startQuizBtn = document.getElementById('start-quiz-btn');
-    const instructorTab = document.getElementById('instructor-tab');
-    const practiceTab = document.getElementById('practice-tab');
-    const quizTypeTitle = document.getElementById('quiz-type-title');
-    const chapterGrid = document.getElementById('chapter-grid');
-    const customQuizSection = document.getElementById('custom-quiz-section');
-    const chapterQuizzesGrid = document.getElementById('chapter-quizzes-grid');
-    const selectedCountEl = document.getElementById('selected-count');
-    const progressFillEl = document.getElementById('progress-fill');
-    const quizProgressBar = document.getElementById('quiz-progress-bar');
-    const quizProgressText = document.getElementById('quiz-progress');
-    const scoreCircleText = document.getElementById('score-circle-text');
+    // DOM elements - will be initialized when DOM is ready
+    let chapterSelection, quizScreen, reviewScreen, chapterTitle, currentQuestionEl, totalQuestionsEl, questionContainer;
+    let homeBtn, prevBtn, nextBtn, reviewBtn, showAnswerBtn, correctCount, incorrectCount, reviewQuestionsContainer;
+    let startQuizBtn, instructorTab, practiceTab, quizTypeTitle, chapterGrid, customQuizSection, chapterQuizzesGrid;
+    let selectedCountEl, progressFillEl, quizProgressBar, quizProgressText, scoreCircleText;
 
-    // Initialize the app
+    // Initialize the app when DOM is ready
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initialize DOM elements
+      initDOMElements();
+      init();
+
+      // Create floating particles
+      createParticles();
+    });
+
+    function initDOMElements() {
+      chapterSelection = document.getElementById('chapter-selection');
+      quizScreen = document.getElementById('quiz-screen');
+      reviewScreen = document.getElementById('review-screen');
+      chapterTitle = document.getElementById('chapter-title');
+      currentQuestionEl = document.getElementById('current-question');
+      totalQuestionsEl = document.getElementById('total-questions');
+      questionContainer = document.getElementById('question-container');
+      homeBtn = document.getElementById('home-btn');
+      prevBtn = document.getElementById('prev-btn');
+      nextBtn = document.getElementById('next-btn');
+      reviewBtn = document.getElementById('review-btn');
+      showAnswerBtn = document.getElementById('show-answer-btn');
+      correctCount = document.getElementById('correct-count');
+      incorrectCount = document.getElementById('incorrect-count');
+      reviewQuestionsContainer = document.getElementById('review-questions-container');
+      startQuizBtn = document.getElementById('start-quiz-btn');
+      instructorTab = document.getElementById('instructor-tab');
+      practiceTab = document.getElementById('practice-tab');
+      quizTypeTitle = document.getElementById('quiz-type-title');
+      chapterGrid = document.getElementById('chapter-grid');
+      customQuizSection = document.getElementById('custom-quiz-section');
+      chapterQuizzesGrid = document.getElementById('chapter-quizzes-grid');
+      selectedCountEl = document.getElementById('selected-count');
+      progressFillEl = document.getElementById('progress-fill');
+      quizProgressBar = document.getElementById('quiz-progress-bar');
+      quizProgressText = document.getElementById('quiz-progress');
+      scoreCircleText = document.getElementById('score-circle-text');
+    }
+
     function init() {
       renderChapterSelection();
       updateSelectionProgress();
       initDarkMode();
 
       // Add event listeners
-      homeBtn.addEventListener('click', returnToHomeScreen);
-      nextBtn.addEventListener('click', nextQuestion);
-      prevBtn.addEventListener('click', prevQuestion);
-      reviewBtn.addEventListener('click', showResults);
-      startQuizBtn.addEventListener('click', startSelectedQuiz);
-      showAnswerBtn.addEventListener('click', toggleAnswer);
+      if (homeBtn) homeBtn.addEventListener('click', returnToHomeScreen);
+      if (nextBtn) nextBtn.addEventListener('click', nextQuestion);
+      if (prevBtn) prevBtn.addEventListener('click', prevQuestion);
+      if (reviewBtn) reviewBtn.addEventListener('click', showResults);
+      if (startQuizBtn) startQuizBtn.addEventListener('click', startSelectedQuiz);
+      if (showAnswerBtn) showAnswerBtn.addEventListener('click', toggleAnswer);
     }
 
     // Dark Mode Toggle
     function initDarkMode() {
       const darkModeToggle = document.getElementById('dark-mode-toggle');
       const body = document.body;
-      const icon = darkModeToggle.querySelector('i');
+      const icon = darkModeToggle?.querySelector('i');
+
+      if (!darkModeToggle || !icon) return;
 
       // Check for saved preference
       if (localStorage.getItem('darkMode') === 'enabled') {
@@ -3595,26 +3392,106 @@
 
       // Update UI
       if (type === 'instructor') {
-        instructorTab.classList.add('active');
-        practiceTab.classList.remove('active');
-        quizTypeTitle.textContent = 'Select Instructor Chapters';
-        chapterGrid.classList.remove('hidden');
-        customQuizSection.classList.add('hidden');
+        if (instructorTab) instructorTab.classList.add('active');
+        if (practiceTab) practiceTab.classList.remove('active');
+        if (quizTypeTitle) quizTypeTitle.textContent = 'Select Instructor Chapters';
+        if (chapterGrid) chapterGrid.classList.remove('hidden');
+        if (customQuizSection) customQuizSection.classList.add('hidden');
         renderChapterSelection();
       } else {
-        instructorTab.classList.remove('active');
-        practiceTab.classList.add('active');
-        quizTypeTitle.textContent = 'Select Practice Quizzes';
-        chapterGrid.classList.add('hidden');
-        customQuizSection.classList.remove('hidden');
+        if (instructorTab) instructorTab.classList.remove('active');
+        if (practiceTab) practiceTab.classList.add('active');
+        if (quizTypeTitle) quizTypeTitle.textContent = 'Select Practice Quizzes';
+        if (chapterGrid) chapterGrid.classList.add('hidden');
+        if (customQuizSection) customQuizSection.classList.remove('hidden');
         renderChapterQuizzes();
       }
 
       updateSelectionProgress();
+      updateSelectAllButton();
+    }
+
+    // Toggle Select All
+    function toggleSelectAll() {
+      const checkboxes = document.querySelectorAll('.chapter-checkbox');
+      const allSelected = Array.from(checkboxes).every(cb => cb.checked);
+      const btn = document.getElementById('select-all-btn');
+      const btnText = btn?.querySelector('span');
+
+      if (!btn || !btnText) return;
+
+      if (allSelected) {
+        // Deselect All
+        checkboxes.forEach(cb => {
+          cb.checked = false;
+        });
+        selectedChapters = [];
+        btnText.textContent = 'Select All';
+        btn.classList.remove('bg-indigo-100', 'text-indigo-800');
+        btn.classList.add('bg-indigo-50', 'text-indigo-600');
+      } else {
+        // Select All
+        selectedChapters = [];
+        checkboxes.forEach(cb => {
+          cb.checked = true;
+          selectedChapters.push(cb.value);
+        });
+        btnText.textContent = 'Deselect All';
+        btn.classList.add('bg-indigo-100', 'text-indigo-800');
+        btn.classList.remove('bg-indigo-50', 'text-indigo-600');
+      }
+
+      if (startQuizBtn) startQuizBtn.disabled = selectedChapters.length === 0;
+      updateSelectionProgress();
+    }
+
+    // Update Select All Button State based on manual selections
+    function updateSelectAllButton() {
+      const checkboxes = document.querySelectorAll('.chapter-checkbox');
+      if (checkboxes.length === 0) return;
+
+      const allSelected = Array.from(checkboxes).every(cb => cb.checked);
+      const btn = document.getElementById('select-all-btn');
+      const btnText = btn?.querySelector('span');
+
+      if (!btn || !btnText) return;
+
+      if (allSelected) {
+        btnText.textContent = 'Deselect All';
+        btn.classList.add('bg-indigo-100', 'text-indigo-800');
+        btn.classList.remove('bg-indigo-50', 'text-indigo-600');
+      } else {
+        btnText.textContent = 'Select All';
+        btn.classList.remove('bg-indigo-100', 'text-indigo-800');
+        btn.classList.add('bg-indigo-50', 'text-indigo-600');
+      }
+    }
+
+    // Toggle Shuffle
+    function toggleShuffle() {
+      isShuffleEnabled = !isShuffleEnabled;
+      const toggle = document.getElementById('shuffle-toggle');
+      const knob = toggle?.querySelector('div');
+
+      if (!toggle || !knob) return;
+
+      if (isShuffleEnabled) {
+        toggle.classList.remove('bg-gray-300');
+        toggle.classList.add('bg-indigo-600');
+        knob.classList.remove('translate-x-0');
+        knob.classList.add('translate-x-6');
+      } else {
+        toggle.classList.add('bg-gray-300');
+        toggle.classList.remove('bg-indigo-600');
+        knob.classList.add('translate-x-0');
+        knob.classList.remove('translate-x-6');
+      }
     }
 
     // Render chapter selection based on current quiz type
     function renderChapterSelection() {
+      if (!chapterGrid) return;
+
       if (currentQuizType === 'instructor') {
         // Clear existing checkboxes
         chapterGrid.innerHTML = '';
@@ -3631,15 +3508,18 @@
             const chapterDiv = document.createElement('div');
             chapterDiv.className = 'chapter-container';
             chapterDiv.innerHTML = `
-                            <input type="checkbox" id="chapter${chapter}" class="chapter-checkbox hidden" value="${chapter}">
-                            <label for="chapter${chapter}" class="chapter-btn block ${style.bg} ${style.hover} ${style.text} py-4 px-6 rounded-lg cursor-pointer">
-                                <div class="chapter-content">
-                                    <i class="fas ${style.icon} text-xl mb-2"></i>
-                                    <h3 class="font-medium">${chapterInfo.title.split(':')[0].trim()}</h3>
-                                    <p class="text-sm text-gray-600">${chapterInfo.title.split(':')[1].trim()}</p>
-                                </div>
-                            </label>
-                        `;
+            <input type="checkbox" id="chapter${chapter}" class="chapter-checkbox hidden" value="${chapter}">
+            <label for="chapter${chapter}"
+                   style="--active-bg: ${style.activeColor}"
+                   class="chapter-btn block ${style.bg} ${style.hover} ${style.text} py-4 px-6 rounded-lg cursor-pointer">
+                <div class="chapter-content">
+                    <i class="fas ${style.icon} text-2xl mb-3"
+                       style="background: ${style.iconGradient}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                    <h3 class="font-medium">${chapterInfo.title.split(':')[0].trim()}</h3>
+                    <p class="text-sm text-gray-600">${chapterInfo.title.split(':')[1].trim()}</p>
+                </div>
+            </label>
+          `;
             chapterGrid.appendChild(chapterDiv);
 
             // Add event listener
@@ -3650,8 +3530,9 @@
               } else {
                 selectedChapters = selectedChapters.filter(ch => ch !== checkbox.value);
               }
-              startQuizBtn.disabled = selectedChapters.length === 0;
+              if (startQuizBtn) startQuizBtn.disabled = selectedChapters.length === 0;
               updateSelectionProgress();
+              updateSelectAllButton();
             });
           }
         });
@@ -3664,12 +3545,14 @@
       const selected = selectedChapters.length;
       const percentage = Math.min(100, (selected / (total || 1)) * 100);
 
-      progressFillEl.style.width = `${percentage}%`;
-      selectedCountEl.textContent = `${selected} of ${total}`;
+      if (progressFillEl) progressFillEl.style.width = `${percentage}%`;
+      if (selectedCountEl) selectedCountEl.textContent = `${selected} of ${total}`;
     }
 
     // Render chapter quizzes for practice section
     function renderChapterQuizzes() {
+      if (!chapterQuizzesGrid) return;
+
       chapterQuizzesGrid.innerHTML = '';
 
       // Add practice chapter quizzes
@@ -3684,15 +3567,18 @@
           const quizDiv = document.createElement('div');
           quizDiv.className = 'chapter-container';
           quizDiv.innerHTML = `
-                        <input type="checkbox" id="${quizId}" class="chapter-checkbox hidden" value="${quizId}">
-                        <label for="${quizId}" class="chapter-btn block ${style.bg} ${style.hover} ${style.text} py-4 px-6 rounded-lg cursor-pointer">
-                            <div class="chapter-content">
-                                <i class="fas ${style.icon} text-xl mb-2"></i>
-                                <h3 class="font-medium">${quiz.title.split(':')[0].trim()}</h3>
-                                <p class="text-sm text-gray-600">${quiz.title.split(':')[1].trim()}</p>
-                            </div>
-                        </label>
-                    `;
+          <input type="checkbox" id="${quizId}" class="chapter-checkbox hidden" value="${quizId}">
+          <label for="${quizId}"
+                 style="--active-bg: ${style.activeColor}"
+                 class="chapter-btn block ${style.bg} ${style.hover} ${style.text} py-4 px-6 rounded-lg cursor-pointer">
+              <div class="chapter-content">
+                  <i class="fas ${style.icon} text-2xl mb-3"
+                     style="background: ${style.iconGradient}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                  <h3 class="font-medium">${quiz.title.split(':')[0].trim()}</h3>
+                  <p class="text-sm text-gray-600">${quiz.title.split(':')[1].trim()}</p>
+              </div>
+          </label>
+        `;
           chapterQuizzesGrid.appendChild(quizDiv);
 
           // Add event listener
@@ -3703,8 +3589,9 @@
             } else {
               selectedChapters = selectedChapters.filter(id => id !== quizId);
             }
-            startQuizBtn.disabled = selectedChapters.length === 0;
+            if (startQuizBtn) startQuizBtn.disabled = selectedChapters.length === 0;
             updateSelectionProgress();
+            updateSelectAllButton();
           });
         }
       });
@@ -3712,211 +3599,177 @@
       updateSelectionProgress();
     }
 
-    // Get current questions based on quiz type
-    function getCurrentQuestions() {
-      const chapter = selectedChapters[currentChapterIndex];
-
-      if (currentQuizType === 'instructor') {
-        return quizData.instructor[chapter].questions;
-      }
-      return quizData.practice[chapter].questions;
-    }
-
     // Start quiz with selected chapters/quizzes
     function startSelectedQuiz() {
       if (selectedChapters.length === 0) return;
 
-      currentChapterIndex = 0;
-      currentQuestion = 0;
+      allQuestions = [];
       userAnswers = [];
+      currentGlobalQuestionIndex = 0;
       isAnswerShown = false;
 
-      // Initialize userAnswers array for all questions
+      // 1. Collect all questions from selected chapters
       selectedChapters.forEach(chapter => {
-        let questions;
+        let chapterObj;
         if (currentQuizType === 'instructor') {
-          questions = quizData.instructor[chapter].questions;
+          chapterObj = quizData.instructor[chapter];
         } else {
-          questions = quizData.practice[chapter].questions;
+          chapterObj = quizData.practice[chapter];
         }
-        userAnswers.push(...Array(questions.length).fill(null));
+
+        // Add chapter info to each question for display
+        const chapterQuestions = chapterObj.questions.map(q => ({
+          ...q,
+          chapterTitle: chapterObj.title
+        }));
+
+        allQuestions.push(...chapterQuestions);
       });
 
-      // Start with first chapter/quiz
-      loadCurrentChapter();
-
-      chapterSelection.classList.add('hidden');
-      quizScreen.classList.remove('hidden');
-      reviewScreen.classList.add('hidden');
-    }
-
-    // Load current chapter/quiz
-    function loadCurrentChapter() {
-      const chapter = selectedChapters[currentChapterIndex];
-      if (currentQuizType === 'instructor') {
-        chapterTitle.textContent = quizData.instructor[chapter].title;
-      } else {
-        chapterTitle.textContent = quizData.practice[chapter].title;
+      // 2. Shuffle if enabled
+      if (isShuffleEnabled) {
+        // Fisher-Yates shuffle
+        for (let i = allQuestions.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [allQuestions[i], allQuestions[j]] = [allQuestions[j], allQuestions[i]];
+        }
       }
+
+      // Initialize userAnswers
+      userAnswers = Array(allQuestions.length).fill(null);
+
+      // Start quiz
+      if (chapterSelection) chapterSelection.classList.add('hidden');
+      if (quizScreen) quizScreen.classList.remove('hidden');
+      if (reviewScreen) reviewScreen.classList.add('hidden');
+
       showQuestion();
     }
 
     // Display current question
     function showQuestion() {
       try {
-        const questions = getCurrentQuestions();
-        const question = questions[currentQuestion];
+        if (!questionContainer || currentGlobalQuestionIndex >= allQuestions.length) return;
+
+        const question = allQuestions[currentGlobalQuestionIndex];
         const optionLetters = ['A', 'B', 'C', 'D'];
-        const answerIndex = getGlobalAnswerIndex();
 
-        // Calculate question position
-        const totalQuestions = selectedChapters.reduce((total, ch) => {
-          let questions;
-          if (currentQuizType === 'instructor') {
-            questions = quizData.instructor[ch].questions;
-          } else {
-            questions = quizData.practice[ch].questions;
-          }
-          return total + questions.length;
-        }, 0);
+        // Update Chapter Title 
+        if (question.chapterTitle && chapterTitle) {
+          chapterTitle.textContent = question.chapterTitle;
+        }
 
-        const currentQuestionNumber = selectedChapters.slice(0, currentChapterIndex).reduce((total, ch) => {
-          let questions;
-          if (currentQuizType === 'instructor') {
-            questions = quizData.instructor[ch].questions;
-          } else {
-            questions = quizData.practice[ch].questions;
-          }
-          return total + questions.length;
-        }, 0) + currentQuestion + 1;
+        const totalQuestions = allQuestions.length;
+        const currentQuestionNumber = currentGlobalQuestionIndex + 1;
 
         // Update progress
         const progressPercentage = Math.min(100, Math.round((currentQuestionNumber / totalQuestions) * 100));
-        quizProgressBar.style.width = `${progressPercentage}%`;
-        quizProgressText.textContent = `${progressPercentage}%`;
+        if (quizProgressBar) quizProgressBar.style.width = `${progressPercentage}%`;
+        if (quizProgressText) quizProgressText.textContent = `${progressPercentage}%`;
 
         // Build question HTML
         let questionHTML = `
-                    <div class="mb-6">
-                        <p class="text-lg font-medium text-gray-800 mb-4">${question.question}</p>
-                        <div class="space-y-3">`;
+        <div class="mb-6">
+            <p class="text-lg font-medium text-gray-800 mb-4">${question.question}</p>
+            <div class="space-y-3">`;
 
         question.options.forEach((option, index) => {
-          const isSelected = userAnswers[answerIndex] === optionLetters[index];
+          const isSelected = userAnswers[currentGlobalQuestionIndex] === optionLetters[index];
           questionHTML += `
-                        <div class="option p-4 rounded-lg cursor-pointer transition-all ${isSelected ? 'selected-answer' : 'hover:bg-gray-100'}"
-                            data-option="${optionLetters[index]}" onclick="selectOption(this)">
-                            <span class="font-medium">${optionLetters[index]})</span> ${option}
-                        </div>`;
+          <div class="option p-4 rounded-lg cursor-pointer transition-all ${isSelected ? 'selected-answer' : 'hover:bg-gray-100'}"
+              data-option="${optionLetters[index]}" onclick="selectOption(this)">
+              <span class="font-medium">${optionLetters[index]})</span> ${option}
+          </div>`;
         });
 
         questionHTML += `</div>
-                    <div id="answer-reveal" class="answer-reveal">
-                        <div class="flex items-start space-x-3">
-                            <div class="flex-shrink-0">
-                                <i class="fas fa-check-circle text-green-600 text-xl"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-semibold text-green-800 mb-2">Correct Answer</h4>
-                                <p class="mb-2"><span class="font-medium">Answer:</span> <span id="correct-answer-text"></span></p>
-                                <p class="text-sm text-gray-700"><span class="font-medium">Explanation:</span> <span id="explanation-text"></span></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
+          <div id="answer-reveal" class="answer-reveal">
+              <div class="flex items-start space-x-3">
+                  <div class="flex-shrink-0">
+                      <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                  </div>
+                  <div class="flex-1">
+                      <h4 class="font-semibold text-green-800 mb-2">Correct Answer</h4>
+                      <p class="mb-2"><span class="font-medium">Answer:</span> <span id="correct-answer-text"></span></p>
+                      <p class="text-sm text-gray-700"><span class="font-medium">Explanation:</span> <span id="explanation-text"></span></p>
+                  </div>
+              </div>
+          </div>
+      </div>`;
 
         questionContainer.innerHTML = questionHTML;
-        currentQuestionEl.textContent = currentQuestionNumber;
-        totalQuestionsEl.textContent = totalQuestions;
+        if (currentQuestionEl) currentQuestionEl.textContent = currentQuestionNumber;
+        if (totalQuestionsEl) totalQuestionsEl.textContent = totalQuestions;
         resetAnswerButton();
         updateNavigationButtons();
       } catch (error) {
         console.error("Error loading question:", error);
-        questionContainer.innerHTML = `
-                    <div class="text-center py-8 text-red-600">
-                        <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
-                        <p>Error loading question. Please try again.</p>
-                        <button onclick="showQuestion()" class="mt-4 text-indigo-600">
-                            <i class="fas fa-redo mr-2"></i> Retry
-                        </button>
-                    </div>`;
+        if (questionContainer) {
+          questionContainer.innerHTML = `
+          <div class="text-center py-8 text-red-600">
+              <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
+              <p>Error loading question. Please try again.</p>
+              <button onclick="showQuestion()" class="mt-4 text-indigo-600">
+                  <i class="fas fa-redo mr-2"></i> Retry
+              </button>
+          </div>`;
+        }
       }
     }
 
     // Update navigation buttons
     function updateNavigationButtons() {
-      const questions = getCurrentQuestions();
-      prevBtn.disabled = currentQuestion === 0 && currentChapterIndex === 0;
-      nextBtn.textContent = isLastQuestion() ? 'Finish' : 'Next';
-      nextBtn.innerHTML = isLastQuestion() ?
+      if (!prevBtn || !nextBtn || !reviewBtn) return;
+
+      prevBtn.disabled = currentGlobalQuestionIndex === 0;
+      const isLast = currentGlobalQuestionIndex === allQuestions.length - 1;
+
+      nextBtn.textContent = isLast ? 'Finish' : 'Next';
+      nextBtn.innerHTML = isLast ?
         '<i class="fas fa-check-circle mr-2"></i> Finish' :
         'Next <i class="fas fa-arrow-right ml-2"></i>';
 
       // Show review button if on last question and some answers exist
       const hasAnswers = userAnswers.some(answer => answer !== null);
-      reviewBtn.classList.toggle('hidden', !(isLastQuestion() && hasAnswers));
+      reviewBtn.classList.toggle('hidden', !(isLast && hasAnswers));
     }
 
     // Reset answer button to default state
     function resetAnswerButton() {
+      if (!showAnswerBtn) return;
       showAnswerBtn.innerHTML = '<i class="fas fa-lightbulb mr-2"></i> Show Answer';
       showAnswerBtn.dataset.state = 'hidden';
       isAnswerShown = false;
     }
 
-    // Check if current question is the last one across all selected chapters/quizzes
-    function isLastQuestion() {
-      return currentChapterIndex === selectedChapters.length - 1 &&
-        currentQuestion === getCurrentQuestions().length - 1;
-    }
+    // Handle option selection
+    function selectOption(optionElement) {
+      if (isAnswerShown) return; // Prevent changing answer if revealed
 
-    // Get global index for userAnswers array
-    function getGlobalAnswerIndex() {
-      let index = 0;
-      for (let i = 0; i < currentChapterIndex; i++) {
-        let questions;
-        if (currentQuizType === 'instructor') {
-          questions = quizData.instructor[selectedChapters[i]].questions;
-        } else {
-          questions = quizData.practice[selectedChapters[i]].questions;
-        }
-        index += questions.length;
-      }
-      return index + currentQuestion;
-    }
+      const selectedOption = optionElement.dataset.option;
 
-    // Select an option
-    function selectOption(element) {
-      const option = element.getAttribute('data-option');
-      const answerIndex = getGlobalAnswerIndex();
-      userAnswers[answerIndex] = option;
+      // Update data
+      userAnswers[currentGlobalQuestionIndex] = selectedOption;
 
       // Update UI
-      document.querySelectorAll('.option').forEach(opt => {
-        opt.classList.remove('selected-answer');
-        opt.classList.add('hover:bg-gray-100');
+      document.querySelectorAll('.option').forEach(el => {
+        el.classList.remove('selected-answer');
       });
+      optionElement.classList.add('selected-answer');
 
-      element.classList.add('selected-answer');
-      element.classList.remove('hover:bg-gray-100');
-
-      // Enable review button if on last question
-      if (isLastQuestion()) {
-        reviewBtn.classList.remove('hidden');
-      }
+      updateNavigationButtons();
     }
 
     // Show correct answer and explanation
     function showAnswer() {
       try {
-        const questions = getCurrentQuestions();
-        const question = questions[currentQuestion];
+        const question = allQuestions[currentGlobalQuestionIndex];
 
         // Get the answer reveal container
         const questionCard = document.getElementById('question-container');
-        const answerReveal = questionCard.querySelector('#answer-reveal');
-        const correctAnswerText = questionCard.querySelector('#correct-answer-text');
-        const explanationText = questionCard.querySelector('#explanation-text');
+        const answerReveal = questionCard?.querySelector('#answer-reveal');
+        const correctAnswerText = questionCard?.querySelector('#correct-answer-text');
+        const explanationText = questionCard?.querySelector('#explanation-text');
 
         if (answerReveal && correctAnswerText && explanationText) {
           // Highlight the correct option
@@ -3941,8 +3794,10 @@
           answerReveal.classList.add('show');
 
           // Update button state
-          showAnswerBtn.innerHTML = '<i class="fas fa-eye-slash mr-2"></i> Hide Answer';
-          showAnswerBtn.dataset.state = 'shown';
+          if (showAnswerBtn) {
+            showAnswerBtn.innerHTML = '<i class="fas fa-eye-slash mr-2"></i> Hide Answer';
+            showAnswerBtn.dataset.state = 'shown';
+          }
           isAnswerShown = true;
         }
       } catch (error) {
@@ -3977,47 +3832,21 @@
     function nextQuestion() {
       hideAnswer();
 
-      const questions = getCurrentQuestions();
-
-      if (currentQuestion < questions.length - 1) {
-        currentQuestion++;
-      } else if (currentChapterIndex < selectedChapters.length - 1) {
-        currentChapterIndex++;
-        currentQuestion = 0;
-        // Update chapter title with transition effect
-        chapterTitle.classList.remove('chapter-transition');
-        setTimeout(() => {
-          chapterTitle.classList.add('chapter-transition');
-          loadCurrentChapter();
-        }, 10);
-        return;
+      if (currentGlobalQuestionIndex < allQuestions.length - 1) {
+        currentGlobalQuestionIndex++;
+        showQuestion();
       } else {
         showResults();
-        return;
       }
-
-      showQuestion();
     }
 
     function prevQuestion() {
       hideAnswer();
 
-      if (currentQuestion > 0) {
-        currentQuestion--;
-      } else if (currentChapterIndex > 0) {
-        currentChapterIndex--;
-        const questions = getCurrentQuestions();
-        currentQuestion = questions.length - 1;
-        // Update chapter title with transition effect
-        chapterTitle.classList.remove('chapter-transition');
-        setTimeout(() => {
-          chapterTitle.classList.add('chapter-transition');
-          loadCurrentChapter();
-        }, 10);
-        return;
+      if (currentGlobalQuestionIndex > 0) {
+        currentGlobalQuestionIndex--;
+        showQuestion();
       }
-
-      showQuestion();
     }
 
     // Show quiz results
@@ -4027,51 +3856,28 @@
       quizResults.incorrect = 0;
       quizResults.skipped = 0;
 
-      let answerIndex = 0;
-      let totalQuestions = 0;
-
-      // First count total questions
-      selectedChapters.forEach(chapter => {
-        let questions;
-        if (currentQuizType === 'instructor') {
-          questions = quizData.instructor[chapter].questions;
+      for (let i = 0; i < allQuestions.length; i++) {
+        const q = allQuestions[i];
+        if (userAnswers[i] === q.answer) {
+          quizResults.correct++;
+        } else if (userAnswers[i] !== null) {
+          quizResults.incorrect++;
         } else {
-          questions = quizData.practice[chapter].questions;
+          quizResults.skipped++;
         }
-        totalQuestions += questions.length;
-      });
-
-      // Then calculate results
-      selectedChapters.forEach(chapter => {
-        let questions;
-        if (currentQuizType === 'instructor') {
-          questions = quizData.instructor[chapter].questions;
-        } else {
-          questions = quizData.practice[chapter].questions;
-        }
-
-        for (let i = 0; i < questions.length; i++) {
-          if (userAnswers[answerIndex] === questions[i].answer) {
-            quizResults.correct++;
-          } else if (userAnswers[answerIndex] !== null) {
-            quizResults.incorrect++;
-          } else {
-            quizResults.skipped++;
-          }
-          answerIndex++;
-        }
-      });
+      }
 
       // Update UI
-      correctCount.textContent = quizResults.correct;
-      incorrectCount.textContent = quizResults.incorrect + quizResults.skipped; // Show skipped as incorrect
+      if (correctCount) correctCount.textContent = quizResults.correct;
+      if (incorrectCount) incorrectCount.textContent = quizResults.incorrect + quizResults.skipped;
 
       // Calculate percentage based on total questions
-      const percentage = Math.round((quizResults.correct / totalQuestions) * 100);
+      const percentage = Math.round((quizResults.correct / allQuestions.length) * 100);
 
       // Update score circle
-      document.querySelector('.score-circle').style.setProperty('--p', `${percentage}%`);
-      scoreCircleText.textContent = `${percentage}%`;
+      const scoreCircle = document.querySelector('.score-circle');
+      if (scoreCircle) scoreCircle.style.setProperty('--p', `${percentage}%`);
+      if (scoreCircleText) scoreCircleText.textContent = `${percentage}%`;
 
       // Show review screen with results
       showReview();
@@ -4080,64 +3886,50 @@
     // Show review screen
     function showReview() {
       let reviewHTML = '';
-      let answerIndex = 0;
 
-      selectedChapters.forEach(chapter => {
-        let quiz, questions;
-        if (currentQuizType === 'instructor') {
-          quiz = quizData.instructor[chapter];
-          questions = quiz.questions;
-        } else {
-          quiz = quizData.practice[chapter];
-          questions = quiz.questions;
-        }
+      reviewHTML += `<div class="mb-8">
+                      <h3 class="text-xl font-semibold text-gray-800 mb-4">Quiz Review</h3>`;
+
+      allQuestions.forEach((question, index) => {
+        const userAnswer = userAnswers[index];
+        const isCorrect = userAnswer === question.answer;
+        const isSkipped = userAnswer === null;
+        const answerClass = isCorrect ? 'correct-answer' :
+          isSkipped ? 'skipped-question' : 'incorrect-answer';
 
         reviewHTML += `
-                    <div class="mb-8">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-4">${quiz.title}</h3>
-                `;
+                      <div class="review-question-card p-4 ${answerClass} mb-4">
+                          <p class="text-xs text-gray-500 mb-1">${question.chapterTitle || ''}</p>
+                          <p class="font-medium mb-2">Question ${index + 1}: ${question.question}</p>
+                  `;
 
-        questions.forEach((question, index) => {
-          const userAnswer = userAnswers[answerIndex];
-          const isCorrect = userAnswer === question.answer;
-          const isSkipped = userAnswer === null;
-          const answerClass = isCorrect ? 'correct-answer' :
-            isSkipped ? 'skipped-question' : 'incorrect-answer';
-
+        // Show user's answer
+        if (userAnswer !== null) {
+          const optionIndex = userAnswer.charCodeAt(0) - 'A'.charCodeAt(0);
           reviewHTML += `
-                        <div class="review-question-card p-4 ${answerClass} mb-4">
-                            <p class="font-medium mb-2">Question ${index + 1}: ${question.question}</p>
-                    `;
+                          <p class="mb-1"><span class="font-medium">Your answer:</span> ${userAnswer}) ${question.options[optionIndex]}</p>
+                      `;
+        } else {
+          reviewHTML += `<p class="mb-1 text-yellow-700">You skipped this question</p>`;
+        }
 
-          // Show user's answer
-          if (userAnswer !== null) {
-            const optionIndex = userAnswer.charCodeAt(0) - 'A'.charCodeAt(0);
-            reviewHTML += `
-                            <p class="mb-1"><span class="font-medium">Your answer:</span> ${userAnswer}) ${question.options[optionIndex]}</p>
-                        `;
-          } else {
-            reviewHTML += `<p class="mb-1 text-yellow-700">You skipped this question</p>`;
-          }
-
-          // Show correct answer and explanation
-          const correctOptionIndex = question.answer.charCodeAt(0) - 'A'.charCodeAt(0);
-          reviewHTML += `
-                        <p class="mb-1"><span class="font-medium">Correct answer:</span> ${question.answer}) ${question.options[correctOptionIndex]}</p>
-                        <p class="text-sm text-gray-700 mt-2"><span class="font-medium">Explanation:</span> ${question.explanation}</p>
-                    `;
-
-          reviewHTML += `</div>`;
-          answerIndex++;
-        });
+        // Show correct answer and explanation
+        const correctOptionIndex = question.answer.charCodeAt(0) - 'A'.charCodeAt(0);
+        reviewHTML += `
+                      <p class="mb-1"><span class="font-medium">Correct answer:</span> ${question.answer}) ${question.options[correctOptionIndex]}</p>
+                      <p class="text-sm text-gray-700 mt-2"><span class="font-medium">Explanation:</span> ${question.explanation}</p>
+                  `;
 
         reviewHTML += `</div>`;
       });
 
-      reviewQuestionsContainer.innerHTML = reviewHTML;
+      reviewHTML += `</div>`;
+
+      if (reviewQuestionsContainer) reviewQuestionsContainer.innerHTML = reviewHTML;
 
       // Switch screens
-      quizScreen.classList.add('hidden');
-      reviewScreen.classList.remove('hidden');
+      if (quizScreen) quizScreen.classList.add('hidden');
+      if (reviewScreen) reviewScreen.classList.remove('hidden');
     }
 
     // Navigation functions
@@ -4151,17 +3943,18 @@
       document.querySelectorAll('.chapter-checkbox').forEach(checkbox => {
         checkbox.checked = false;
       });
-      startQuizBtn.disabled = true;
+      if (startQuizBtn) startQuizBtn.disabled = true;
 
-      chapterSelection.classList.remove('hidden');
-      quizScreen.classList.add('hidden');
-      reviewScreen.classList.add('hidden');
+      if (chapterSelection) chapterSelection.classList.remove('hidden');
+      if (quizScreen) quizScreen.classList.add('hidden');
+      if (reviewScreen) reviewScreen.classList.add('hidden');
       updateSelectionProgress();
     }
 
     // Home function with confirmation
     function goHome() {
-      if (quizScreen.classList.contains('hidden') && reviewScreen.classList.contains('hidden')) {
+      if (quizScreen && quizScreen.classList.contains('hidden') &&
+        reviewScreen && reviewScreen.classList.contains('hidden')) {
         returnToHomeScreen();
         return;
       }
@@ -4172,27 +3965,6 @@
         returnToHomeScreen();
       }
     }
-
-    // Make functions available globally
-    window.startQuiz = startSelectedQuiz;
-    window.selectOption = selectOption;
-    window.restartQuiz = restartQuiz;
-    window.returnToHomeScreen = returnToHomeScreen;
-    window.goHome = goHome;
-    window.nextQuestion = nextQuestion;
-    window.prevQuestion = prevQuestion;
-    window.toggleAnswer = toggleAnswer;
-    window.showQuestion = showQuestion;
-    window.showAnswer = showAnswer;
-    window.hideAnswer = hideAnswer;
-    window.updateNavigationButtons = updateNavigationButtons;
-    window.getGlobalAnswerIndex = getGlobalAnswerIndex;
-    window.getCurrentQuestions = getCurrentQuestions;
-    window.updateSelectionProgress = updateSelectionProgress;
-    window.switchQuizType = switchQuizType;
-
-    // Initialize the app
-    init();
 
     // Create floating particles
     function createParticles() {
@@ -4224,8 +3996,23 @@
       }
     }
 
-    // Call after load
-    window.addEventListener('DOMContentLoaded', createParticles);
+    // Make functions available globally
+    window.startQuiz = startSelectedQuiz;
+    window.selectOption = selectOption;
+    window.restartQuiz = restartQuiz;
+    window.returnToHomeScreen = returnToHomeScreen;
+    window.goHome = goHome;
+    window.nextQuestion = nextQuestion;
+    window.prevQuestion = prevQuestion;
+    window.toggleAnswer = toggleAnswer;
+    window.showQuestion = showQuestion;
+    window.showAnswer = showAnswer;
+    window.hideAnswer = hideAnswer;
+    window.updateNavigationButtons = updateNavigationButtons;
+    window.updateSelectionProgress = updateSelectionProgress;
+    window.switchQuizType = switchQuizType;
+    window.toggleSelectAll = toggleSelectAll;
+    window.toggleShuffle = toggleShuffle;
   </script>
 </body>
 
